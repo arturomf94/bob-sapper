@@ -10,6 +10,10 @@
   import Message from "../../components/Message.svelte";
   import Input from "../../components/Input.svelte";
   import Navbar from "../../components/Navbar.svelte";
+  import bsv from "bsv";
+  // import bsvMessage from "bsv/message";
+  import datapay from "datapay";
+  import { privateKey } from "../../store/wallet";
 
   function randomMessage() {
     return allMessages[(Math.random() * allMessages.length) | 0];
@@ -77,17 +81,33 @@
     }
   }
 
+  async function sendMessage(message) {
+    // const signature = Message.sign(message, $privateKey);
+
+    await datapay.send({
+      data: [protocols.message, recipient.address, message],
+      pay: { key: $privateKey }
+    });
+
+    console.log("send successfully");
+  }
+
   function handleSend(event) {
+    const message = event.detail.text;
+
     messages = messages.concat({
       sendByMe: true,
-      text: event.detail.text
+      text: message
     });
-    setTimeout(() => {
-      messages = messages.concat({
-        sendByMe: false,
-        text: randomMessage()
-      });
-    }, 200 + Math.random() * 200);
+
+    sendMessage(message);
+
+    // setTimeout(() => {
+    //   messages = messages.concat({
+    //     sendByMe: false,
+    //     text: randomMessage()
+    //   });
+    // }, 200 + Math.random() * 200);
   }
 
   function handleResize() {

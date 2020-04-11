@@ -10,12 +10,15 @@
   import Message from "../../components/Message.svelte";
   import Input from "../../components/Input.svelte";
   import Navbar from "../../components/Navbar.svelte";
+  import datapay from "datapay";
+  import { fetchApiKey } from "../../mattercloud";
+  import { apiKey } from "../../store/keys";
+  import { seed, privateKey } from "../../store/wallet";
+  import { sendMessage } from "../../push";
 
   function randomMessage() {
     return allMessages[(Math.random() * allMessages.length) | 0];
   }
-
-  export let slug;
 
   let messages = [];
   let input;
@@ -77,17 +80,22 @@
     }
   }
 
-  function handleSend(event) {
+  async function handleSend(event) {
+    const message = event.detail.text;
+
     messages = messages.concat({
       sendByMe: true,
-      text: event.detail.text
+      text: message
     });
-    setTimeout(() => {
-      messages = messages.concat({
-        sendByMe: false,
-        text: randomMessage()
-      });
-    }, 200 + Math.random() * 200);
+
+    sendMessage(message, $apiKey, $privateKey);
+
+    // setTimeout(() => {
+    //   messages = messages.concat({
+    //     sendByMe: false,
+    //     text: randomMessage()
+    //   });
+    // }, 200 + Math.random() * 200);
   }
 
   function handleResize() {
@@ -95,6 +103,13 @@
   }
 
   onMount(async () => {
+    await apiKey.load();
+    if (!$apiKey) {
+      $apiKey = await fetchApiKey();
+    }
+
+    await privateKey.load();
+
     await loadMore();
     scroller.scrollTop = scroller.scrollHeight;
   });

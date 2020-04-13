@@ -1,7 +1,6 @@
 <script>
   import SvelteInfiniteScroll from "svelte-infinite-scroll";
   import names from "../chats.js";
-  import Navbar from "../components/Navbar.svelte";
 
   let page = 0;
   let size = 50;

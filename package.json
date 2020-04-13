@@ -21,12 +21,13 @@
   },
   "devDependencies": {
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
+    "@fullhuman/postcss-purgecss": "^2.1.2",
     "axios": "^0.19.2",
+    "bsv": "^1.5.0",
     "datapay": "git+https://github.com/Breavyn/datapay.git#4a939f881491b032ebd432d3e9f84cee2f685313",
     "dexie": "^2.0.4",
     "fa-svelte": "^3.1.0",
     "npm-run-all": "^4.1.5",
-    "planter": "^0.4.0",
     "postcss-cli": "^7.1.0",
     "postcss-import": "^12.0.1",
     "postcss-url": "^8.0.0",
@@ -37,6 +38,7 @@
     "svelte-loader": "^2.9.0",
     "svelte-preprocess": "^3.7.1",
     "tailwindcss": "^1.2.0",
+    "tailwindcss-spinner": "^1.0.0",
     "webpack": "^4.7.0"
   }
 }

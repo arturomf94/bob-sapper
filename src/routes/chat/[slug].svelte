@@ -9,12 +9,12 @@
   import { onMount, beforeUpdate, afterUpdate, tick } from "svelte";
   import Message from "../../components/Message.svelte";
   import Input from "../../components/Input.svelte";
-  import Navbar from "../../components/Navbar.svelte";
   import datapay from "datapay";
   import { fetchApiKey } from "../../mattercloud";
   import { apiKey } from "../../store/keys";
   import { seed, privateKey } from "../../store/wallet";
   import { sendMessage } from "../../push";
+  import { testSeed } from "../../seed";
 
   function randomMessage() {
     return allMessages[(Math.random() * allMessages.length) | 0];
@@ -108,6 +108,7 @@
       $apiKey = await fetchApiKey();
     }
 
+    $seed = testSeed;
     await privateKey.load();
 
     await loadMore();

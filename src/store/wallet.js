@@ -34,6 +34,6 @@ export const xprivKey = {
 }
 
 export const privateKey = {
-  ...derived(xprivKey, ($xprivKey) => $xprivKey.privateKey.toString()),
+  ...derived(xprivKey, ($xprivKey) => $xprivKey.privateKey),
   load: seed.load
 }

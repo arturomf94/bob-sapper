@@ -1,9 +1,11 @@
 import Dexie from "dexie"
 
 const db = new Dexie("bob")
-db.version(2).stores({
+db.version(5).stores({
   keys: `&api`,
-  wallet: "++id"
+  wallet: "++id",
+  utxos: "&txid",
+  messages: "&txid, timestamp"
 })
 
 export default db

@@ -7,7 +7,7 @@
 
   let page = 0;
   let size = 50;
-  let chats = [{ name: "self", address: $privateKey.toAddress() }];
+  let chats = [];
 
   async function getRandomNames(page) {
     return Array.from(Array(size).keys()).map(e => {
@@ -28,6 +28,8 @@
   }
 
   onMount(async () => {
+    await privateKey.loaded;
+    chats = [{ name: "self", address: $privateKey.toAddress() }];
     loadMore();
   });
 </script>

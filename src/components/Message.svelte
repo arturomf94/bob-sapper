@@ -1,6 +1,11 @@
 <script>
+  import Icon from "fa-svelte";
+  import { faCheckDouble, faCheck } from "@fortawesome/free-solid-svg-icons";
+
   export let text;
   export let sendByMe;
+  export let mempool;
+  export let broadcast;
 </script>
 
 <style>
@@ -28,4 +33,9 @@
   <div
     class="absolute bottom-0 {sendByMe ? 'pointer-right' : 'pointer-left'}" />
   {text}
+  {#if mempool}
+    <Icon class="ml-1 text-grey text-xs" icon={faCheckDouble} />
+  {:else if broadcast}
+    <Icon class="ml-1 text-grey text-xs" icon={faCheck} />
+  {/if}
 </div>

@@ -1,4 +1,4 @@
-import { writable } from "svelte/store"
+import { writable } from "./factory"
 import db from "./db"
 
 async function getKey() {
@@ -13,19 +13,4 @@ async function setKey(key) {
   })
 }
 
-function createKey() {
-  const { subscribe, set, update } = writable()
-
-  return {
-    subscribe,
-    set: (key) => {
-      set(key)
-      setKey(key)
-    },
-    load: async () => {
-      set(await getKey())
-    }
-  }
-}
-
-export const apiKey = createKey()
+export const apiKey = writable(getKey, setKey)

@@ -7,8 +7,8 @@
 
   async function saveSeed() {
     loading = true;
-    input = "";
     $seed = input;
+    input = "";
     success = true;
     loading = false;
   }

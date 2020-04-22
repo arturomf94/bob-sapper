@@ -22,9 +22,11 @@
         blk: 1,
         "tx.h": 1,
         "out.s3": 1,
+        "out.s4": 1,
         "out.s5": 1,
         "out.s6": 1,
         "out.o1": 1,
+        "in.e": 1,
         timestamp: 1
       },
       limit: 30
@@ -39,7 +41,10 @@
     socket.onmessage = event => {
       const data = JSON.parse(event.data);
       for (const tx of data.data) {
-        putMessage(getMessage(tx));
+        console.log(tx);
+        const message = getMessage(tx);
+        console.log(message);
+        putMessage(message);
       }
     };
     console.log("Socket listening");

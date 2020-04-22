@@ -115,12 +115,12 @@
     {#each $chats as chat}
       <li class="w-full py-2">
         <a
-          href="/chat/{chat.recipient}"
+          href="/chat/{chat.contact}"
           class="border-solid text-white flex flex-row overflow-x-hidden">
           <div
             class="w-10 h-10 bg-grey-200 rounded-full flex-shrink-0 mr-2 my-auto" />
           <ul style="min-width:0;">
-            <li>{chat.recipient === $address ? 'Storage' : chat.recipient}</li>
+            <li>{chat.contact === $address ? 'Storage' : chat.contact}</li>
             <li class="text-sm text-grey-400 cut-text">{chat.text}</li>
           </ul>
         </a>

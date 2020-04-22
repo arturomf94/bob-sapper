@@ -27,7 +27,9 @@
   // let localMessages = [];
 
   $: localMessages = $sorted.filter(
-    message => message.recpient == recipient || message.sender == recipient
+    message =>
+      (message.recipient === recipient && message.sender === $address) ||
+      (message.sender === recipient && message.recipient === $address)
   );
 
   // const localMessages = derived(sorted, $sort =>
@@ -148,7 +150,7 @@
   <div class="flex-grow" />
 </Navbar>
 <ReverseScroller on:loadMore={loadMore}>
-  {#each localMessages as { sender, text, mempool, broadcast }, i}
+  {#each localMessages as { sender, recipient, text, mempool, broadcast }, i}
     <div
       class="flex {sender == $address ? 'flex-row-reverse' : 'flex-row'}"
       style="margin: 0.5rem;">

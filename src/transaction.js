@@ -31,6 +31,9 @@ export async function build({ data, to = [] }) {
   if (get(sats) < tx.getFee()) {
     console.log("fetching utxos: ")
     const res = await fetchUTXOs(address)
+    if (!res.length) {
+      throw new Error("No spedable UTXOs found.")
+    }
     utxos.set(res)
   }
 

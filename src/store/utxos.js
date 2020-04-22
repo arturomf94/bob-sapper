@@ -17,6 +17,6 @@ import { writable, derived } from "svelte/store"
 
 export const utxos = writable([])
 
-export const sats = derived(utxos, ($utxos) =>
-  $utxos.reduce((acc, utxo) => acc + utxo.satoshis, 0)
-)
+export const sats = derived(utxos, ($utxos) => {
+  return $utxos.reduce((acc, utxo) => acc + utxo.satoshis, 0)
+})

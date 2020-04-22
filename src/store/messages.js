@@ -51,12 +51,16 @@ export const chats = derived(
             text: "You can send messages to yourself here"
           }
         ])
+        .map((msg) => {
+          return {
+            contact: msg.recipient === $address ? msg.sender : msg.recipient,
+            text: msg.text
+          }
+        })
         .filter(
           (message, index, self) =>
             self.findIndex((msg) => {
-              return msg.sender === $address
-                ? msg.recipient === message.recipient
-                : msg.sender === message.sender
+              return msg.contact === message.contact
             }) === index
         )
     )

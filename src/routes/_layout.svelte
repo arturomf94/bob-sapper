@@ -1,12 +1,10 @@
 <script>
-  import Navbar from "../components/Navbar.svelte";
+  // import Navbar from "../components/Navbar.svelte";
   import { onMount } from "svelte";
   import { address } from "../store/wallet";
   import { messages, putMessage } from "../store/messages";
   import { getMessage } from "../planaria";
   import db from "../store/db";
-
-  export let segment;
 
   $: query = JSON.stringify({
     q: {
@@ -69,6 +67,5 @@
 </script>
 
 <div class="w-full flex flex-col h-screen bg-grey-900">
-  <Navbar {segment} />
   <slot />
 </div>

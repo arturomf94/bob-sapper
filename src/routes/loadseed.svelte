@@ -1,5 +1,6 @@
 <script>
   import { seed } from "../store/wallet";
+  import Navbar from "../components/Navbar.svelte";
 
   let input;
   let loading = false;
@@ -14,6 +15,7 @@
   }
 </script>
 
+<Navbar back="/">Import seed</Navbar>
 <div class="flex my-auto flex-col my-auto m-16">
   <h2 class="text-white font-bold text-2xl text-center p-3">
     Seed phrase import

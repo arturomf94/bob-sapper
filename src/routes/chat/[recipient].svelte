@@ -18,6 +18,7 @@
   import { fetchBitsocket, getMessage } from "../../planaria";
   import { readStream } from "../../utils/stream";
   import { derived } from "svelte/store";
+  import Navbar from "../../components/Navbar.svelte";
 
   export let recipient;
   // let messages = {};
@@ -142,6 +143,7 @@
   });
 </script>
 
+<Navbar back="/">{recipient}</Navbar>
 <ReverseScroller on:loadMore={loadMore}>
   {#each localMessages as { sender, text, mempool, broadcast }, i}
     <div

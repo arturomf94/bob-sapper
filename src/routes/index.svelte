@@ -8,9 +8,12 @@
   import { chats, sorted, messages, putMessage } from "../store/messages";
   import { readStream } from "../utils/stream";
   import { fetchBitbus, fetchBitsocket, getMessage } from "../planaria";
+  import Navbar from "../components/Navbar.svelte";
 
   let page = 0;
   let size = 50;
+
+  let menu = [{ title: "Import seed", url: "/loadseed" }];
 
   $: query = JSON.stringify({
     q: {
@@ -58,6 +61,7 @@
   <title>BOB Chats</title>
 </svelte:head>
 
+<Navbar {menu}>BOB</Navbar>
 <ul style="overflow-x: scroll;" class="scrolling-touch flex-auto px-3 py-2">
   {#each $chats as chat}
     <li class="w-full py-2">

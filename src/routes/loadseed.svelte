@@ -15,7 +15,10 @@
   }
 </script>
 
-<Navbar back="/">Import seed</Navbar>
+<Navbar back="/">
+  Import seed
+  <div class="flex-grow" />
+</Navbar>
 <div class="flex my-auto flex-col my-auto m-16">
   <h2 class="text-white font-bold text-2xl text-center p-3">
     Seed phrase import

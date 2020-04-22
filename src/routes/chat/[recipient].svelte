@@ -143,7 +143,10 @@
   });
 </script>
 
-<Navbar back="/">{recipient}</Navbar>
+<Navbar back="/">
+  {recipient}
+  <div class="flex-grow" />
+</Navbar>
 <ReverseScroller on:loadMore={loadMore}>
   {#each localMessages as { sender, text, mempool, broadcast }, i}
     <div

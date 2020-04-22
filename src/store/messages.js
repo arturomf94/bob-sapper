@@ -42,14 +42,23 @@ export const chats = derived(
 
       //     )
       //   )
-      $sorted.reverse().filter(
-        (message, index, self) =>
-          self.findIndex((msg) => {
-            return msg.sender === $address
-              ? msg.recipient === message.recipient
-              : msg.sender === message.sender
-          }) === index
-      )
+      $sorted
+        .reverse()
+        .concat([
+          {
+            sender: $address,
+            recipient: $address,
+            text: "You can send messages to yourself here"
+          }
+        ])
+        .filter(
+          (message, index, self) =>
+            self.findIndex((msg) => {
+              return msg.sender === $address
+                ? msg.recipient === message.recipient
+                : msg.sender === message.sender
+            }) === index
+        )
     )
   },
   []

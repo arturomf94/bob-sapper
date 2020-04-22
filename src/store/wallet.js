@@ -18,3 +18,7 @@ export const xprivKey = derived(seed, ($seed) =>
 export const privateKey = derived(xprivKey, ($xprivKey) =>
   $xprivKey ? $xprivKey.privateKey : undefined
 )
+
+export const address = derived(privateKey, ($privateKey) =>
+  $privateKey ? $privateKey.toAddress().toString() : undefined
+)

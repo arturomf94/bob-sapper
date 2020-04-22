@@ -1,16 +1,16 @@
 import { get } from "svelte/store"
-import { apiKey } from "./store/keys"
+import { mattercloudKey } from "./store/keys"
 import axios from "axios"
 
 const baseURL = "https://api.mattercloud.net/api/v3/main"
 
 async function getConfig() {
-  await apiKey.loaded
-  let key = get(apiKey)
+  await mattercloudKey.loaded
+  let key = get(mattercloudKey)
   if (!key) {
     console.log("Fetching new Mattercloud API key")
-    key = await fetchApiKey()
-    apiKey.set(key)
+    key = await fetchmattercloudKey()
+    mattercloudKey.set(key)
   }
   return {
     baseURL,
@@ -42,13 +42,13 @@ export async function broadcast(rawtx) {
   }
 }
 
-export async function fetchApiKey() {
+export async function fetchmattercloudKey() {
   const response = await axios.post(
     "https://api.bitindex.network/api/v2/registration/account?secret=secretkey"
   )
-  const apiKey = response.data && response.data.apiKey
-  if (!apiKey) {
+  const mattercloudKey = response.data && response.data.mattercloudKey
+  if (!mattercloudKey) {
     throw new Error("Failed to request MatterCloud API key.")
   }
-  return apiKey
+  return mattercloudKey
 }

@@ -3,33 +3,53 @@
   import names from "../chats.js";
   import { onMount } from "svelte";
   import dexie from "dexie";
-  import { privateKey } from "../store/wallet.js";
+  import { privateKey, address } from "../store/wallet";
+  import db from "../store/db";
+  import { chats, sorted, messages, putMessage } from "../store/messages";
+  import { readStream } from "../utils/stream";
+  import { fetchBitbus, fetchBitsocket, getMessage } from "../planaria";
 
   let page = 0;
   let size = 50;
-  let chats = [];
 
-  async function getRandomNames(page) {
-    return Array.from(Array(size).keys()).map(e => {
-      return {
-        name: names[(Math.random() * names.length) | 0],
-        address: "xxx"
-      };
-    });
-  }
+  $: query = JSON.stringify({
+    q: {
+      find: {
+        "out.s2": "13N6yAoibzWQ6MZPeoroeMAE8NRviupB75",
+        $or: [
+          { "out.s3": $address },
+          {
+            "out.s4": $address
+          }
+        ]
+      },
+      // sort: { timestamp: -1 },
+      project: {
+        blk: 1,
+        "tx.h": 1,
+        "out.s3": 1,
+        "out.s4": 1,
+        "out.s5": 1,
+        "out.s6": 1,
+        "out.o1": 1,
+        "in.e": 1,
+        timestamp: 1
+      },
+      limit: 30
+    }
+  });
 
   async function loadMore() {
-    // dexie.messages.where();
-    page += 1;
-    chats = [
-      ...chats,
-      ...(await getRandomNames(page)) //.splice(size * page, size * (page + 1) - 1)
-    ];
+    await address.loaded;
+    const socketRes = await fetchBitsocket(query);
+    readStream(socketRes, tx => putMessage(getMessage(tx)));
+
+    const bitbusRes = await fetchBitbus(query);
+    readStream(bitbusRes, tx => putMessage(getMessage(tx)));
   }
 
   onMount(async () => {
     await privateKey.loaded;
-    chats = [{ name: "self", address: $privateKey.toAddress() }];
     loadMore();
   });
 </script>
@@ -39,16 +59,16 @@
 </svelte:head>
 
 <ul style="overflow-x: scroll;" class="scrolling-touch flex-auto px-3 py-2">
-  {#each chats as chat}
+  {#each $chats as chat}
     <li class="w-full py-2">
       <a
-        href="/chat/{chat.address}"
+        href="/chat/{chat.recipient}"
         class="border-solid text-white flex flex-row">
         <div
           class="w-10 h-10 bg-grey-200 rounded-full flex-shrink-0 mr-2 my-auto" />
         <ul>
-          <li>{chat.name}</li>
-          <li class="text-sm text-grey-400">test</li>
+          <li>{chat.recipient}</li>
+          <li class="text-sm text-grey-400">{chat.text}</li>
         </ul>
       </a>
     </li>

@@ -10,7 +10,11 @@
   import { fetchBitbus, fetchBitsocket, getMessage } from "../planaria";
   import Navbar from "../components/Navbar.svelte";
   import Icon from "fa-svelte";
-  import { faSearch, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+  import {
+    faSearch,
+    faArrowRight,
+    faQrcode
+  } from "@fortawesome/free-solid-svg-icons";
 
   let page = 0;
   let size = 50;
@@ -95,6 +99,9 @@
   <!-- <button class="px-2 h-full" on:click={handleSearch}>
     <Icon class="float-right" icon={faSearch} />
   </button> -->
+  <a class="px-2 h-full" href="/fund">
+    <Icon class="float-right" icon={faQrcode} />
+  </a>
 </Navbar>
 <ul style="overflow-x: scroll;" class="scrolling-touch flex-auto px-3 py-2">
   {#if search}

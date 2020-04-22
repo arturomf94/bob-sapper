@@ -46,7 +46,7 @@ export async function fetchmattercloudKey() {
   const response = await axios.post(
     "https://api.bitindex.network/api/v2/registration/account?secret=secretkey"
   )
-  const mattercloudKey = response.data && response.data.mattercloudKey
+  const mattercloudKey = response.data && response.data.apiKey
   if (!mattercloudKey) {
     throw new Error("Failed to request MatterCloud API key.")
   }

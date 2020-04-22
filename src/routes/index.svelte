@@ -66,6 +66,14 @@
   });
 </script>
 
+<style>
+  .cut-text {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+</style>
+
 <svelte:head>
   <title>BOB Chats</title>
 </svelte:head>
@@ -101,12 +109,12 @@
       <li class="w-full py-2">
         <a
           href="/chat/{chat.recipient}"
-          class="border-solid text-white flex flex-row">
+          class="border-solid text-white flex flex-row overflow-x-hidden">
           <div
             class="w-10 h-10 bg-grey-200 rounded-full flex-shrink-0 mr-2 my-auto" />
-          <ul>
+          <ul style="min-width:0;">
             <li>{chat.recipient === $address ? 'Storage' : chat.recipient}</li>
-            <li class="text-sm text-grey-400">{chat.text}</li>
+            <li class="text-sm text-grey-400 cut-text">{chat.text}</li>
           </ul>
         </a>
       </li>

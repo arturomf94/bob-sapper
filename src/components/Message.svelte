@@ -28,7 +28,7 @@
 
 <div
   class="text-sm mx-3 bg-grey-800 max-w-md {sendByMe ? 'text-right float-right rounded-l-lg' : 'text-left float-left rounded-r-lg'}
-  text-white rounded-t-lg relative"
+  text-white rounded-t-lg relative break-words"
   style="padding: 0.5rem 0.75rem;">
   <div
     class="absolute bottom-0 {sendByMe ? 'pointer-right' : 'pointer-left'}" />

@@ -13,11 +13,12 @@
       <Icon icon={faArrowLeft} />
     </a>
   {/if}
-  <slot />
-  <div class="flex-grow" />
+  <slot>
+    <div class="flex-grow" />
+  </slot>
   {#if menu}
     <button
-      class=""
+      class="px-2"
       on:click={() => {
         dropdown = true;
       }}>

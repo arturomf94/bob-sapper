@@ -24,7 +24,9 @@
     <h2 class="text-white font-bold text-2xl text-center p-3">
       {#if loaded}Balance: {$sats / 1000000} bsv{:else}Fetching balance...{/if}
     </h2>
-    <h2 class="text-white font-bold text-2xl text-center p-3">{$address}</h2>
+    <h2 class="text-white font-bold text-2xl text-center p-3 break-words">
+      {$address}
+    </h2>
 
     <Qr value={$address} />
   {:else}

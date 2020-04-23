@@ -12,7 +12,11 @@ export async function readStream(stream, callBack) {
     lastLine = decoded.pop()
     for (const line of decoded) {
       const tx = JSON.parse(line)
-      callBack(tx)
+      try {
+        callBack(tx)
+      } catch (e) {
+        console.log("Failed to unpack message:", e)
+      }
     }
     readNext()
   }

@@ -42,7 +42,13 @@
       const data = JSON.parse(event.data);
       for (const tx of data.data) {
         console.log(tx);
-        const message = getMessage(tx);
+        let message;
+        try {
+          message = getMessage(tx);
+        } catch (e) {
+          console.log("Failed to unpack message:", e);
+          return;
+        }
         console.log(message);
         putMessage(message);
       }

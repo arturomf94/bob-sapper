@@ -1,5 +1,6 @@
 import { bitbusKey } from "./store/keys"
 import { get } from "svelte/store"
+import Address from "bsv/lib/address"
 
 // TODO: Dynamically generate
 bitbusKey.set(
@@ -32,7 +33,7 @@ export async function fetchBitbus(query) {
 
 export function getMessage(tx) {
   const output = tx.out[0]
-  return {
+  const message = {
     text: output.s5,
     sender: output.s3,
     recipient: output.s4,
@@ -42,4 +43,13 @@ export function getMessage(tx) {
     prev: tx.in ? tx.in[0].e : undefined,
     blk: tx.blk ? tx.blk.i : undefined
   }
+
+  new Address(message.recipient)
+  new Address(message.sender)
+
+  if (!message.recipient || !message.prev) {
+    console.log(tx)
+    console.log(message)
+  }
+  return message
 }

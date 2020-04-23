@@ -1,6 +1,7 @@
 <script>
   import { seed } from "../store/wallet";
   import Navbar from "../components/Navbar.svelte";
+  import { goto } from "@sapper/app";
 
   let input;
   let loading = false;
@@ -12,6 +13,7 @@
     input = "";
     success = true;
     loading = false;
+    await goto("/");
   }
 </script>
 

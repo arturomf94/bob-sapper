@@ -2,6 +2,7 @@
   import SvelteInfiniteScroll from "svelte-infinite-scroll";
   import names from "../chats.js";
   import { onMount } from "svelte";
+  import { goto } from "@sapper/app";
   import dexie from "dexie";
   import { privateKey, address } from "../store/wallet";
   import db from "../store/db";
@@ -66,9 +67,11 @@
   // }
 
   onMount(async () => {
+    await address.loaded;
+    if (!$address) await goto("/loadseed");
+
     const imageModule = await import("../components/Image.svelte");
     Image = imageModule.default;
-    await privateKey.loaded;
     loadMore();
   });
 </script>

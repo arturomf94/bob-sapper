@@ -24,7 +24,10 @@
   let search;
   let input;
 
-  let menu = [{ title: "Import seed", url: "/loadseed" }];
+  let menu = [
+    { title: "Import seed", url: "/loadseed" },
+    { title: "Settings", url: "/settings" }
+  ];
 
   $: query = JSON.stringify({
     q: {

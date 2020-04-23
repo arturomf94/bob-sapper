@@ -6,6 +6,15 @@
   export let sendByMe;
   export let mempool;
   export let broadcast;
+  export let timestamp;
+
+  $: datetime = timestamp
+    ? new Date(timestamp).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      })
+    : undefined;
 </script>
 
 <style>
@@ -29,17 +38,30 @@
     padding: 0.5rem 0.75rem;
     min-width: 0;
   }
+
+  .smoltext {
+    font-size: 0.5rem;
+  }
 </style>
 
 <div
-  class="text-sm mx-3 bg-grey-800 max-w-md {sendByMe ? 'text-right float-right rounded-l-lg' : 'text-left float-left rounded-r-lg'}
+  class="text-sm mx-3 bg-grey-800 max-w-md {sendByMe ? 'text-left float-right rounded-l-lg' : 'text-left float-left rounded-r-lg'}
   text-white rounded-t-lg relative break-words bubble">
   <div
     class="absolute bottom-0 {sendByMe ? 'pointer-right' : 'pointer-left'}" />
-  {text}
-  {#if mempool}
-    <Icon class="ml-1 text-grey text-xs" icon={faCheckDouble} />
-  {:else if broadcast}
-    <Icon class="ml-1 text-grey text-xs" icon={faCheck} />
-  {/if}
+  <span class={sendByMe ? 'mr-10' : 'mr-6'}>{text}</span>
+  <div class="absolute right-0 bottom-0 mr-2 mb-1 smoltext">
+    {#if datetime}
+      <span class="text-grey-300 smoltext">{datetime}</span>
+    {/if}
+    {#if sendByMe}
+      {#if mempool}
+        <Icon class="ml-1 text-grey smoltext" icon={faCheckDouble} />
+      {:else if broadcast}
+        <Icon class="ml-1 text-grey smoltext" icon={faCheck} />
+      {/if}
+    {/if}
+
+  </div>
+
 </div>

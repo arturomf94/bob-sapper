@@ -151,14 +151,19 @@
   <div class="flex-grow" />
 </Navbar>
 <ReverseScroller on:loadMore={loadMore}>
-  {#each localMessages as { sender, recipient, text, mempool, broadcast }, i}
+  {#each localMessages as { sender, recipient, text, mempool, broadcast, timestamp }, i}
     <div
       class="flex {sender == $address ? 'flex-row-reverse' : 'flex-row'}"
       style="margin: 0.5rem;">
       <!-- {#if i === 0 || messages[i - 1].sendByMe}
           <div class="w-8 h-8 bg-grey-200 rounded-full mt-auto flex-shrink-0" />
         {/if} -->
-      <Message sendByMe={sender == $address} {text} {mempool} {broadcast} />
+      <Message
+        sendByMe={sender == $address}
+        {text}
+        {mempool}
+        {broadcast}
+        {timestamp} />
     </div>
   {/each}
 </ReverseScroller>

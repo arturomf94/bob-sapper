@@ -16,6 +16,7 @@
     faQrcode
   } from "@fortawesome/free-solid-svg-icons";
 
+  let Image;
   let page = 0;
   let size = 50;
   // let showSearch = false;
@@ -65,6 +66,8 @@
   // }
 
   onMount(async () => {
+    const imageModule = await import("../components/Image.svelte");
+    Image = imageModule.default;
     await privateKey.loaded;
     loadMore();
   });
@@ -118,7 +121,10 @@
           href="/chat/{chat.contact}"
           class="border-solid text-white flex flex-row overflow-x-hidden">
           <div
-            class="w-10 h-10 bg-grey-200 rounded-full flex-shrink-0 mr-2 my-auto" />
+            class="w-10 h-10 bg-grey-200 rounded-full flex-shrink-0 mr-2 my-auto
+            overflow-hidden">
+            <svelte:component this={Image} address={chat.contact} />
+          </div>
           <ul style="min-width:0;">
             <li>{chat.contact === $address ? 'Storage' : chat.contact}</li>
             <li class="text-sm text-grey-400 cut-text">{chat.text}</li>

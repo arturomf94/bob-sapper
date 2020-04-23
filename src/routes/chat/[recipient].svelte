@@ -116,6 +116,7 @@
       recipient,
       sender: $address,
       text,
+      signature,
       broadcast: false,
       mempool: false,
       timestamp: Date.now()

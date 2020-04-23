@@ -13,6 +13,8 @@ import db from "./db"
 
 import { writable, derived, get } from "svelte/store"
 import { address } from "./wallet"
+import Address from "bsv/lib/address"
+import * as bsvMessage from "bsv/message"
 
 export const messages = writable({})
 
@@ -73,4 +75,15 @@ export async function putMessage(message) {
   m[message.txid] = message
   messages.set(m)
   db.messages.put(message)
+}
+
+export function verifyMessage(message) {
+  new Address(message.recipient)
+  new Address(message.sender)
+  const signed = bsvMessage.verify(
+    message.text,
+    message.sender,
+    message.signature
+  )
+  if (!signed) throw new Error("Failed to verify message signature")
 }

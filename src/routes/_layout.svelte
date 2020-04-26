@@ -2,7 +2,7 @@
   // import Navbar from "../components/Navbar.svelte";
   import { onMount } from "svelte";
   import { address } from "../store/wallet";
-  import { messages, putMessage } from "../store/messages";
+  import { messages } from "../store/messages";
   import { getMessage } from "../planaria";
   import db from "../store/db";
 
@@ -38,8 +38,10 @@
     const socket = new EventSource(
       "https://txo.bitsocket.network/s/" + btoa(query)
     );
-    socket.onmessage = event => {
+    socket.onmessage = async event => {
       const data = JSON.parse(event.data);
+      await messages.loaded;
+
       for (const tx of data.data) {
         console.log(tx);
         let message;
@@ -50,7 +52,7 @@
           return;
         }
         console.log(message);
-        putMessage(message);
+        messages.put(message);
       }
     };
     console.log("Socket listening");
@@ -58,22 +60,6 @@
 
   onMount(async () => {
     createSocket();
-    const loaded = await db.messages
-      .orderBy("timestamp")
-      .reverse()
-      .limit(1000)
-      .toArray();
-    $messages = loaded.reduce((acc, m) => {
-      acc[m.txid] = m;
-      return acc;
-    }, {});
-    // Object.assign(
-    //   $messages,
-    //   await db.messages
-    //     .orderBy("timestamp")
-    //     .reverse()
-    //     .limit(1000)
-    // );
   });
 </script>
 

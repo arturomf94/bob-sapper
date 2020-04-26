@@ -10,7 +10,7 @@
   import Input from "../../components/Input.svelte";
   import { broadcast } from "../../mattercloud";
   import { seed, privateKey, address } from "../../store/wallet";
-  import { messages, sorted, putMessage } from "../../store/messages";
+  import { messages, sorted } from "../../store/messages";
   import { build } from "../../transaction";
   import db from "../../store/db";
   import * as bsvMessage from "bsv/message";
@@ -74,23 +74,22 @@
   });
 
   async function loadMore() {
+    await messages.loaded;
     if (loadingAt == localMessages.length) return;
     loadingAt = localMessages.length;
 
     console.log("loading");
+
     const loaded = await db.messages
       .orderBy("timestamp")
       .reverse()
       .limit(5)
       .toArray();
 
-    Object.assign(
-      $messages,
-      loaded.reduce((obj, tx) => ((obj[tx.txid] = tx), obj), {})
-    );
+    messages.bulkPut(loaded, false);
 
     const res = await fetchBitsocket(query);
-    readStream(res, tx => putMessage(getMessage(tx)));
+    readStream(res, tx => messages.put(getMessage(tx)));
   }
 
   async function handleSend(event) {
@@ -111,7 +110,7 @@
       data
     });
 
-    putMessage({
+    const message = {
       txid: tx.hash,
       recipient,
       sender: $address,
@@ -120,29 +119,19 @@
       broadcast: false,
       mempool: false,
       timestamp: Date.now()
-    });
+    };
+
+    messages.put(message);
     const res = await broadcast(tx.serialize());
-    $messages[tx.hash].broadcast = true;
+    messages.put({
+      ...message,
+      broadcast: true
+    });
   }
 
-  // async function putMessage(tx) {
-  //   const output = tx.out[0];
-  //   const message = {
-  //     text: output.s5,
-  //     sender: output.s3,
-  //     recipient: output.s4,
-  //     timestamp: tx.timestamp || tx.blk.t,
-  //     mempool: true,
-  //     txid: tx.tx.h,
-  //     prev: tx.in[0].e,
-  //     blk: tx.blk ? tx.blk.i : undefined
-  //   };
-  //   $messages[tx.tx.h] = message;
-  //   db.messages.put(message);
-  // }
-
   onMount(async () => {
-    await loadMore();
+    const res = await fetchBitsocket(query);
+    readStream(res, tx => messages.put(getMessage(tx)));
   });
 </script>
 

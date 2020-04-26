@@ -1,22 +1,53 @@
-// import { writable, derived } from "./factory"
+import { writable, derived } from "./factory"
 import db from "./db"
-
-// async function getMessages() {
-//   return db.messages.orderBy("timestamp").reverse().limit(1000)
-// }
-
-// async function setMessages(messages) {
-//   db.messages.bulkPut(messages)
-// }
-
-// export const messages = writable(getMessages, setMessages)
-
-import { writable, derived, get } from "svelte/store"
+import { get } from "svelte/store"
 import { address } from "./wallet"
 import Address from "bsv/lib/address"
 import * as bsvMessage from "bsv/message"
 
-export const messages = writable({})
+async function getMessages() {
+  const loaded = await db.messages
+    .orderBy("timestamp")
+    .reverse()
+    .limit(1000)
+    .toArray()
+  return loaded.reduce((acc, m) => {
+    acc[m.txid] = m
+    return acc
+  }, {})
+}
+
+async function setMessages(messages) {
+  db.messages.bulkPut(messages)
+}
+
+function createMessageStore() {
+  const { subscribe, loaded, update } = writable(getMessages, setMessages, {})
+
+  return {
+    subscribe,
+    loaded,
+    put: (msg) => {
+      update((msgs) => {
+        msgs[msg.txid] = msg
+        return msgs
+      })
+      db.messages.put(msg)
+    },
+    bulkPut: (newMsgs, saveDB = true) => {
+      update((msgs) => {
+        Object.assign(
+          msgs,
+          newMsgs.reduce((obj, tx) => ((obj[tx.txid] = tx), obj), {})
+        )
+        return msgs
+      })
+      if (saveDB) db.messages.bulkPut(msgs)
+    }
+  }
+}
+
+export const messages = createMessageStore()
 
 export const sorted = derived(messages, ($messages) =>
   Object.values($messages).sort((a, b) => a.timestamp - b.timestamp)
@@ -26,24 +57,8 @@ export const chats = derived(
   [sorted, address],
   async ([$sorted, $address], set) => {
     await address.loaded
-    // console.log($sorted)
-    // console.log(
-    //   $sorted.map((message) => {
-    //     return message.sender == $address ? message.recipient : message.sender
-    //   })
-    // )
 
     set(
-      //   Array.from(
-      //     new Set(
-      //       // $sorted.map((message) => {
-      //       //   return message.sender == $address
-      //       //     ? message.recipient
-      //       //     : message.sender
-      //       // })
-
-      //     )
-      //   )
       $sorted
         .reverse()
         .concat([
@@ -69,13 +84,6 @@ export const chats = derived(
   },
   []
 )
-
-export async function putMessage(message) {
-  const m = get(messages)
-  m[message.txid] = message
-  messages.set(m)
-  db.messages.put(message)
-}
 
 export function verifyMessage(message) {
   new Address(message.recipient)

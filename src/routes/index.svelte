@@ -6,7 +6,7 @@
   import dexie from "dexie";
   import { privateKey, address } from "../store/wallet";
   import db from "../store/db";
-  import { chats, sorted, messages, putMessage } from "../store/messages";
+  import { chats, sorted, messages } from "../store/messages";
   import { readStream } from "../utils/stream";
   import { fetchBitbus, fetchBitsocket, getMessage } from "../planaria";
   import Navbar from "../components/Navbar.svelte";
@@ -57,11 +57,12 @@
 
   async function loadMore() {
     await address.loaded;
+    await messages.loaded;
     const socketRes = await fetchBitsocket(query);
-    readStream(socketRes, tx => putMessage(getMessage(tx)));
+    readStream(socketRes, tx => messages.put(getMessage(tx)));
 
     const bitbusRes = await fetchBitbus(query);
-    readStream(bitbusRes, tx => putMessage(getMessage(tx)));
+    readStream(bitbusRes, tx => messages.put(getMessage(tx)));
   }
 
   // function handleSearch() {

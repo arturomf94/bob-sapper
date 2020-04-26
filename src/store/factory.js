@@ -1,7 +1,7 @@
 import { writable as sWritable, derived as sDerived } from "svelte/store"
 
-export function writable(getter, setter) {
-  const { subscribe, set } = sWritable()
+export function writable(getter, setter, init = undefined) {
+  const { subscribe, set, update } = sWritable(init)
 
   async function load() {
     set(await getter())
@@ -12,10 +12,11 @@ export function writable(getter, setter) {
 
   return {
     subscribe,
-    set: (seed) => {
-      set(seed)
-      setter(seed)
+    set: (value) => {
+      set(value)
+      setter(value)
     },
+    update,
     get loaded() {
       return loaded
     }

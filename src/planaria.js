@@ -61,7 +61,7 @@ export function getMessage(tx) {
   if (tx.timestamp) {
     message.timestamp = tx.timestamp
   } else if (tx.blk.t) {
-    message.timestamp = tx.blk.t
+    message.blktime = tx.blk.t
   }
 
   verifyMessage(message)

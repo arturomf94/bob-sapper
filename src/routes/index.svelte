@@ -4,13 +4,15 @@
   import { onMount } from "svelte";
   import { goto } from "@sapper/app";
   import dexie from "dexie";
-  import { privateKey, address } from "../store/wallet";
+  import { privateKey, address, pubKeyString } from "../store/wallet";
   import db from "../store/db";
   import { chats, sorted, messages } from "../store/messages";
   import { readStream } from "../utils/stream";
   import { fetchBitbus, fetchBitsocket, getMessage } from "../planaria";
   import Navbar from "../components/Navbar.svelte";
   import Icon from "fa-svelte";
+
+  import protocols from "../protocols";
   import {
     faSearch,
     faArrowRight,
@@ -32,11 +34,11 @@
   $: query = JSON.stringify({
     q: {
       find: {
-        "out.s2": "13N6yAoibzWQ6MZPeoroeMAE8NRviupB75",
+        "out.s2": protocols.message,
         $or: [
-          { "out.s3": $address },
+          { "out.s3": $pubKeyString },
           {
-            "out.s4": $address
+            "out.s4": $pubKeyString
           }
         ]
       },
@@ -47,6 +49,7 @@
         "out.s4": 1,
         "out.s5": 1,
         "out.s6": 1,
+        "out.s7": 1,
         "out.o1": 1,
         "in.e": 1,
         timestamp: 1
@@ -130,10 +133,10 @@
           <div
             class="w-10 h-10 bg-grey-200 rounded-full flex-shrink-0 mr-2 my-auto
             overflow-hidden">
-            <svelte:component this={Image} address={chat.contact} />
+            <svelte:component this={Image} pubKey={chat.contact} />
           </div>
           <ul style="min-width:0;">
-            <li>{chat.contact === $address ? 'Storage' : chat.contact}</li>
+            <li>{chat.contact === $pubKeyString ? 'Storage' : chat.contact}</li>
             <li class="text-sm text-grey-400 cut-text">{chat.text}</li>
           </ul>
         </a>

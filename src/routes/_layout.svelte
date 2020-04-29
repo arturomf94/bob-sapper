@@ -1,19 +1,25 @@
 <script>
   // import Navbar from "../components/Navbar.svelte";
   import { onMount } from "svelte";
-  import { address } from "../store/wallet";
+  import { address, pubKeyString } from "../store/wallet";
   import { messages } from "../store/messages";
   import { getMessage } from "../planaria";
   import db from "../store/db";
+  import { gt } from "../utils/versions";
+  import protocols from "../protocols";
+
+  const versions = {
+    protocol: "0.0.3"
+  };
 
   $: query = JSON.stringify({
     q: {
       find: {
-        "out.s2": "13N6yAoibzWQ6MZPeoroeMAE8NRviupB75",
+        "out.s2": protocols.message,
         $or: [
-          { "out.s3": $address },
+          { "out.s3": $pubKeyString },
           {
-            "out.s4": $address
+            "out.s4": $pubKeyString
           }
         ]
       },
@@ -25,16 +31,17 @@
         "out.s4": 1,
         "out.s5": 1,
         "out.s6": 1,
+        "out.s7": 1,
         "out.o1": 1,
         "in.e": 1,
         timestamp: 1
       },
-      limit: 30
+      limit: 100
     }
   });
 
   async function createSocket() {
-    await address.loaded;
+    await pubKeyString.loaded;
     const socket = new EventSource(
       "https://txo.bitsocket.network/s/" + btoa(query)
     );
@@ -59,6 +66,13 @@
   }
 
   onMount(async () => {
+    const prevVersion = await db.versions.get("protocol");
+    if (!prevVersion || gt(versions.protocol, prevVersion.version)) {
+      console.log("New version found, resetting storage");
+      db.messages.clear();
+    }
+    db.versions.put({ module: "protocol", version: versions.protocol });
+
     createSocket();
   });
 </script>

@@ -1,8 +1,9 @@
 import { writable, derived } from "./factory"
 import db from "./db"
 import { get } from "svelte/store"
-import { address } from "./wallet"
+import { address, pubKeyString } from "./wallet"
 import Address from "bsv/lib/address"
+import PublicKey from "bsv/lib/publickey"
 import * as bsvMessage from "bsv/message"
 
 async function getMessages() {
@@ -66,23 +67,24 @@ export const sorted = derived(messages, ($messages) =>
 )
 
 export const chats = derived(
-  [sorted, address],
-  async ([$sorted, $address], set) => {
-    await address.loaded
+  [sorted, pubKeyString],
+  async ([$sorted, $pubKeyString], set) => {
+    await pubKeyString.loaded
 
     set(
       $sorted
         .reverse()
         .concat([
           {
-            sender: $address,
-            recipient: $address,
+            sender: $pubKeyString,
+            recipient: $pubKeyString,
             text: "You can send messages to yourself here"
           }
         ])
         .map((msg) => {
           return {
-            contact: msg.recipient === $address ? msg.sender : msg.recipient,
+            contact:
+              msg.recipient === $pubKeyString ? msg.sender : msg.recipient,
             text: msg.text
           }
         })
@@ -98,11 +100,11 @@ export const chats = derived(
 )
 
 export function verifyMessage(message) {
-  new Address(message.recipient)
-  new Address(message.sender)
+  new PublicKey(message.recipient)
+  const sender = new PublicKey(message.sender)
   const signed = bsvMessage.verify(
     message.text,
-    message.sender,
+    sender.toAddress(),
     message.signature
   )
   if (!signed) throw new Error("Failed to verify message signature")

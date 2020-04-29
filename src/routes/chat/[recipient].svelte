@@ -9,16 +9,28 @@
   import Message from "../../components/Message.svelte";
   import Input from "../../components/Input.svelte";
   import { broadcast } from "../../mattercloud";
-  import { seed, privateKey, address } from "../../store/wallet";
+  import {
+    seed,
+    privateKey,
+    address,
+    encryptECIES,
+    decryptECIES,
+    publicKey,
+    pubKeyString
+  } from "../../store/wallet";
   import { messages, sorted } from "../../store/messages";
   import { build } from "../../transaction";
   import db from "../../store/db";
-  import * as bsvMessage from "bsv/message";
   import ReverseScroller from "../../components/ReverseScroller.svelte";
   import { fetchBitsocket, getMessage, fetchBitbus } from "../../planaria";
   import { readStream } from "../../utils/stream";
   import { derived } from "svelte/store";
   import Navbar from "../../components/Navbar.svelte";
+  import protocols from "../../protocols";
+
+  import bsv from "bsv";
+  import bsvEcies from "bsv/ecies";
+  import * as bsvMessage from "bsv/message";
 
   export let recipient;
   // let messages = {};
@@ -28,9 +40,11 @@
 
   $: localMessages = $sorted.filter(
     message =>
-      (message.recipient === recipient && message.sender === $address) ||
-      (message.sender === recipient && message.recipient === $address)
+      (message.recipient === recipient && message.sender === $pubKeyString) ||
+      (message.sender === recipient && message.recipient === $pubKeyString)
   );
+
+  $: recipientECIES = bsvEcies().publicKey(bsv.PublicKey.fromString(recipient));
 
   // const localMessages = derived(sorted, $sort =>
   //   $sort.filter(
@@ -49,12 +63,12 @@
   $: query = {
     q: {
       find: {
-        "out.s2": "13N6yAoibzWQ6MZPeoroeMAE8NRviupB75",
+        "out.s2": protocols.message,
         $or: [
-          { "out.s3": $address, "out.s4": recipient },
+          { "out.s3": $pubKeyString, "out.s4": recipient },
           {
             "out.s3": recipient,
-            "out.s4": $address
+            "out.s4": $pubKeyString
           }
         ]
       },
@@ -66,6 +80,7 @@
         "out.s4": 1,
         "out.s5": 1,
         "out.s6": 1,
+        "out.s7": 1,
         "out.o1": 1,
         "in.e": 1,
         timestamp: 1,
@@ -111,11 +126,15 @@
     await privateKey.loaded;
     const signature = bsvMessage.sign(text, $privateKey);
 
+    const encryptedText = recipientECIES.encrypt(text).toString("hex");
+    const messageToSelf = $encryptECIES.encrypt(text).toString("hex");
+
     const data = [
-      "13N6yAoibzWQ6MZPeoroeMAE8NRviupB75",
-      $address,
+      protocols.message,
+      $publicKey.toString(),
       recipient,
-      text,
+      encryptedText,
+      messageToSelf,
       signature
     ];
 
@@ -126,7 +145,7 @@
     const message = {
       txid: tx.hash,
       recipient,
-      sender: $address,
+      sender: $publicKey.toString(),
       text,
       signature,
       broadcast: false,
@@ -161,13 +180,13 @@
 <ReverseScroller on:loadMore={loadMore}>
   {#each localMessages as { sender, recipient, text, mempool, broadcast, timestamp, blk }, i}
     <div
-      class="flex {sender == $address ? 'flex-row-reverse' : 'flex-row'}"
+      class="flex {sender == $pubKeyString ? 'flex-row-reverse' : 'flex-row'}"
       style="margin: 0.5rem;">
       <!-- {#if i === 0 || messages[i - 1].sendByMe}
           <div class="w-8 h-8 bg-grey-200 rounded-full mt-auto flex-shrink-0" />
         {/if} -->
       <Message
-        sendByMe={sender == $address}
+        sendByMe={sender == $pubKeyString}
         {text}
         {mempool}
         {broadcast}

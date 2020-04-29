@@ -1,6 +1,8 @@
 import { bitbusKey } from "./store/keys"
 import { get } from "svelte/store"
 import { verifyMessage } from "./store/messages"
+import { decryptECIES, pubKeyString } from "./store/wallet"
+import bsv from "bsv"
 
 // TODO: Dynamically generate
 bitbusKey.set(
@@ -33,14 +35,26 @@ export async function fetchBitbus(query) {
 
 export function getMessage(tx) {
   const output = tx.out[0]
+
   const message = {
-    text: output.s5,
     sender: output.s3,
     recipient: output.s4,
-    signature: output.s6,
+    signature: output.s7,
     mempool: true,
     txid: tx.tx.h,
     prev: tx.in[0].e
+  }
+
+  if (output.s3 === get(pubKeyString)) {
+    message.text = get(decryptECIES)
+      .decrypt(bsv.deps.Buffer.from(output.s6, "hex"))
+      .toString()
+  } else if (output.s4 === get(pubKeyString)) {
+    message.text = get(decryptECIES)
+      .decrypt(bsv.deps.Buffer.from(output.s5, "hex"))
+      .toString()
+  } else {
+    throw new Error("Can't decrypt message")
   }
 
   if (tx.blk) message.blk = tx.blk.i

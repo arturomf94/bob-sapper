@@ -38,12 +38,18 @@ export function getMessage(tx) {
     sender: output.s3,
     recipient: output.s4,
     signature: output.s6,
-    timestamp: tx.timestamp || tx.blk.t,
     mempool: true,
     txid: tx.tx.h,
-    prev: tx.in[0].e,
-    blk: tx.blk ? tx.blk.i : undefined
+    prev: tx.in[0].e
   }
+
+  if (tx.blk) message.blk = tx.blk.i
+  if (tx.timestamp) {
+    message.timestamp = tx.timestamp
+  } else if (tx.blk.t) {
+    message.timestamp = tx.blk.t
+  }
+
   verifyMessage(message)
   return message
 }

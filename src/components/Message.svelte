@@ -1,19 +1,22 @@
 <script>
   import Icon from "fa-svelte";
   import { faCheckDouble, faCheck } from "@fortawesome/free-solid-svg-icons";
+  import { timeSince } from "../utils/time";
 
   export let text;
   export let sendByMe;
   export let mempool;
   export let broadcast;
   export let timestamp;
+  export let block;
 
   $: datetime = timestamp
-    ? new Date(timestamp).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false
-      })
+    ? // ? new Date(timestamp).toLocaleTimeString([], {
+      //     hour: "2-digit",
+      //     minute: "2-digit",
+      //     hour12: false
+      //   })
+      timeSince(new Date(timestamp))
     : undefined;
 </script>
 
@@ -49,7 +52,10 @@
   text-white rounded-t-lg relative break-words bubble">
   <div
     class="absolute bottom-0 {sendByMe ? 'pointer-right' : 'pointer-left'}" />
-  <span class={sendByMe ? 'mr-10' : 'mr-6'}>{text}</span>
+  <span
+    class={sendByMe ? (datetime ? 'mr-10' : 'mr-2') : datetime ? 'mr-6' : ''}>
+    {text}
+  </span>
   <div class="absolute right-0 bottom-0 mr-2 mb-1 smoltext">
     {#if datetime}
       <span class="text-grey-300 smoltext">{datetime}</span>

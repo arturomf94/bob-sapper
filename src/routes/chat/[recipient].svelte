@@ -15,7 +15,7 @@
   import db from "../../store/db";
   import * as bsvMessage from "bsv/message";
   import ReverseScroller from "../../components/ReverseScroller.svelte";
-  import { fetchBitsocket, getMessage } from "../../planaria";
+  import { fetchBitsocket, getMessage, fetchBitbus } from "../../planaria";
   import { readStream } from "../../utils/stream";
   import { derived } from "svelte/store";
   import Navbar from "../../components/Navbar.svelte";
@@ -43,8 +43,10 @@
   let threshold = 300;
   let lastTimestamp = 0;
   let loadingAt;
+  let lastFetched;
+  let loading = false;
 
-  $: query = JSON.stringify({
+  $: query = {
     q: {
       find: {
         "out.s2": "13N6yAoibzWQ6MZPeoroeMAE8NRviupB75",
@@ -69,27 +71,38 @@
         timestamp: 1,
         "blk.i": 1
       },
-      limit: 30
+      limit: 200
     }
-  });
+  };
+
+  $: queryString = JSON.stringify(query);
 
   async function loadMore() {
-    await messages.loaded;
-    if (loadingAt == localMessages.length) return;
-    loadingAt = localMessages.length;
+    // await messages.loaded;
+    // const lastLoaded = localMessages[0].blk;
+
+    // if (loading) return;
+    // loading = true;
+
+    // if (!lastFetched) lastFetched = lastLoaded;
 
     console.log("loading");
 
-    const loaded = await db.messages
-      .orderBy("timestamp")
-      .reverse()
-      .limit(5)
-      .toArray();
+    // const loaded = await db.messages
+    //   .where("blk")
+    //   .between(lastFetched - 5, lastFetched, true, true)
+    //   .toArray();
 
-    messages.bulkPut(loaded, false);
+    // messages.bulkPut(loaded, false);
 
-    const res = await fetchBitsocket(query);
-    readStream(res, tx => messages.put(getMessage(tx)));
+    // const q = query;
+    // q.q.find["blk.i"] = { $lte: lastFetched, $gte: lastFetched - 5 };
+
+    // const res = await fetchBitsocket(JSON.stringify(q));
+    // readStream(res, tx => messages.put(getMessage(tx)));
+
+    // lastFetched += -5;
+    // loading = false;
   }
 
   async function handleSend(event) {
@@ -130,8 +143,14 @@
   }
 
   onMount(async () => {
-    const res = await fetchBitsocket(query);
+    await address.loaded;
+    const res = await fetchBitsocket(queryString);
     readStream(res, tx => messages.put(getMessage(tx)));
+    const bitbusRes = await fetchBitbus(queryString);
+    readStream(bitbusRes, tx => messages.put(getMessage(tx)));
+    // await sorted.loaded;
+    // console.log($sorted);
+    // console.log($messages);
   });
 </script>
 
@@ -140,7 +159,7 @@
   <div class="flex-grow" />
 </Navbar>
 <ReverseScroller on:loadMore={loadMore}>
-  {#each localMessages as { sender, recipient, text, mempool, broadcast, timestamp }, i}
+  {#each localMessages as { sender, recipient, text, mempool, broadcast, timestamp, blk }, i}
     <div
       class="flex {sender == $address ? 'flex-row-reverse' : 'flex-row'}"
       style="margin: 0.5rem;">
@@ -152,7 +171,8 @@
         {text}
         {mempool}
         {broadcast}
-        {timestamp} />
+        {timestamp}
+        block={blk} />
     </div>
   {/each}
 </ReverseScroller>

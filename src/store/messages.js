@@ -7,7 +7,7 @@ import * as bsvMessage from "bsv/message"
 
 async function getMessages() {
   const loaded = await db.messages
-    .orderBy("timestamp")
+    // .orderBy("timestamp")
     .reverse()
     .limit(1000)
     .toArray()
@@ -28,11 +28,14 @@ function createMessageStore() {
     subscribe,
     loaded,
     put: (msg) => {
+      let updated
       update((msgs) => {
-        msgs[msg.txid] = msg
+        const existing = msgs[msg.txid]
+        updated = existing ? Object.assign(existing, msg) : msg
+        msgs[msg.txid] = updated
         return msgs
       })
-      db.messages.put(msg)
+      db.messages.put(updated)
     },
     bulkPut: (newMsgs, saveDB = true) => {
       update((msgs) => {
@@ -50,7 +53,16 @@ function createMessageStore() {
 export const messages = createMessageStore()
 
 export const sorted = derived(messages, ($messages) =>
-  Object.values($messages).sort((a, b) => a.timestamp - b.timestamp)
+  // Object.values($messages).sort((a, b) => a.timestamp || 0 - b.timestamp || 0)
+  Object.values($messages).sort((a, b) => {
+    // if (a.txid == b.prev.h) return 1
+    // if (b.txid == a.prev.h) return -1
+    // return 0
+    if (a.blk == b.blk) return a.timestamp - b.timestamp
+    // if (a.timestamp && b.timestamp) return a.timestamp || 0 - b.timestamp || 0
+    if (a.blk && b.blk) return a.blk - b.blk
+    return b.blk || 0 - a.blk || 0
+  })
 )
 
 export const chats = derived(

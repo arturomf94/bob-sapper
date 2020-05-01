@@ -15,7 +15,8 @@
   import protocols from "../protocols";
   import {
       isPushNotificationSupported,
-      askUserPermission
+      askUserPermission,
+      registerServiceWorker
   } from "../push-notifications"
   import {
     faSearch,
@@ -44,6 +45,7 @@
 
   onMount(async () => {
     const pushNotificationSupported = isPushNotificationSupported();
+    registerServiceWorker();
     askUserPermission();
     await address.loaded;
     if (!$address) await goto("/loadseed");

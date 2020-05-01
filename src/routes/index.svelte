@@ -14,6 +14,10 @@
 
   import protocols from "../protocols";
   import {
+      isPushNotificationSupported,
+      askUserPermission
+  } from "../push-notifications"
+  import {
     faSearch,
     faArrowRight,
     faQrcode
@@ -39,6 +43,8 @@
   async function loadMore() {}
 
   onMount(async () => {
+    const pushNotificationSupported = isPushNotificationSupported();
+    askUserPermission();
     await address.loaded;
     if (!$address) await goto("/loadseed");
 

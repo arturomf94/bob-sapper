@@ -14,6 +14,14 @@
     faArrowRight,
     faQrcode
   } from "@fortawesome/free-solid-svg-icons";
+  import {
+    isPushNotificationSupported,
+    askUserPermission,
+    registerServiceWorker,
+    createNotificationSubscription,
+    getUserSubscription,
+    sendNotification
+  } from "../../push-notifications"
 
   let Image;
   let page = 0;
@@ -49,6 +57,13 @@
   onMount(async () => {
     const imageModule = await import("../../components/Image.svelte");
     Image = imageModule.default;
+    const pushNotificationSupported = isPushNotificationSupported();
+    if (pushNotificationSupported) {
+      askUserPermission();
+      registerServiceWorker();
+      getUserSubscription();
+      createNotificationSubscription();
+    }
   });
 </script>
 

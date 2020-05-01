@@ -17,13 +17,13 @@ async function askUserPermission() {
 /**
  * shows a notification
  */
-function sendNotification(text) {
+function sendNotification(text, id) {
   if (Notification.permission == 'granted') {
     const title = "New message!";
     const options = {
       body: text,
       vibrate: [200, 100, 200],
-      tag: "new-message",
+      tag: id,
       actions: [{ action: "Detail", title: "View", icon: "https://via.placeholder.com/128/ff0000" }]
     };
     navigator.serviceWorker.ready.then(function(serviceWorker) {

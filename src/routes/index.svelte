@@ -2,7 +2,6 @@
   import { onMount } from "svelte";
   import { address } from "../store/wallet";
   import { goto } from "@sapper/app";
-
   onMount(async () => {
     await address.loaded;
     if ($address) goto("/chat");

@@ -2,6 +2,7 @@
   import { seed } from "../../store/wallet";
   import Navbar from "../../components/Navbar.svelte";
   import { goto } from "@sapper/app";
+  import { sendNotification } from "../push-notifications"
 
   let input;
   let loading = false;
@@ -36,5 +37,11 @@
     bg-indigo-700"
     on:click={saveSeed}>
     {#if success}Success!{:else}Import seed phrase{/if}
+  </button>
+  <button
+    class="text-white font-bold rounded p-2 mx-auto my-3 {loading ? 'spinner' : ''}
+    bg-indigo-700"
+    on:click={sendNotification}>
+    Test notifications!
   </button>
 </div>

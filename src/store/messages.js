@@ -5,6 +5,22 @@ import { address, pubKeyString } from "./wallet"
 import Address from "bsv/lib/address"
 import PublicKey from "bsv/lib/publickey"
 import * as bsvMessage from "bsv/message"
+import { lastTx as ltx, firstTx as ftx } from "./state"
+
+let lastTx = get(ltx)
+let firstTx = get(ftx)
+
+ltx.subscribe((i) => (lastTx = i))
+ftx.subscribe((i) => (firstTx = i))
+
+async function updateState(blk, i) {
+  if (!lastTx || blk > lastTx.blk || (blk === lastTx.blk && i > lastTx.i)) {
+    ltx.set({ blk, i })
+  }
+  if (!firstTx || blk < firstTx.blk || (blk === firstTx.blk && i < firstTx.i)) {
+    ftx.set({ blk, i })
+  }
+}
 
 async function getMessages() {
   const loaded = await db.messages
@@ -37,6 +53,7 @@ function createMessageStore() {
         return msgs
       })
       db.messages.put(updated)
+      if (msg.blk) updateState(msg.blk, msg.i)
     },
     bulkPut: (newMsgs, saveDB = true) => {
       update((msgs) => {
@@ -47,6 +64,7 @@ function createMessageStore() {
         return msgs
       })
       if (saveDB) db.messages.bulkPut(msgs)
+      // TODO: Update last block state
     }
   }
 }
@@ -59,7 +77,11 @@ export const sorted = derived(messages, ($messages) =>
     // if (a.txid == b.prev.h) return 1
     // if (b.txid == a.prev.h) return -1
     // return 0
-    if (a.blk == b.blk) return a.timestamp - b.timestamp
+    if (a.blk == b.blk) {
+      if (a.timestamp && b.timestamp) return a.timestamp - b.timestamp
+      if (a.tSender && b.tSender) return a.tSender - b.tSender
+      return a.i - b.i
+    }
     // if (a.timestamp && b.timestamp) return a.timestamp || 0 - b.timestamp || 0
     if (a.blk && b.blk) return a.blk - b.blk
     return b.blk || 0 - a.blk || 0

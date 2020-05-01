@@ -31,47 +31,12 @@
     { title: "Settings", url: "/settings" }
   ];
 
-  $: query = JSON.stringify({
-    q: {
-      find: {
-        "out.s2": protocols.message,
-        $or: [
-          { "out.s3": $pubKeyString },
-          {
-            "out.s4": $pubKeyString
-          }
-        ]
-      },
-      project: {
-        blk: 1,
-        "tx.h": 1,
-        "out.s3": 1,
-        "out.s4": 1,
-        "out.s5": 1,
-        "out.s6": 1,
-        "out.s7": 1,
-        "out.o1": 1,
-        "in.e": 1,
-        timestamp: 1
-      },
-      limit: 30
-    }
-  });
-
-  async function loadMore() {
-    await address.loaded;
-    await messages.loaded;
-    const socketRes = await fetchBitsocket(query);
-    readStream(socketRes, tx => messages.put(getMessage(tx)));
-
-    const bitbusRes = await fetchBitbus(query);
-    readStream(bitbusRes, tx => messages.put(getMessage(tx)));
-  }
-
   // function handleSearch() {
   //   showSearch = !showSearch;
   //   if (showSearch) input.focus();
   // }
+
+  async function loadMore() {}
 
   onMount(async () => {
     await address.loaded;
@@ -79,7 +44,6 @@
 
     const imageModule = await import("../components/Image.svelte");
     Image = imageModule.default;
-    loadMore();
   });
 </script>
 

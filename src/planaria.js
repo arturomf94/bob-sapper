@@ -42,7 +42,9 @@ export function getMessage(tx) {
     signature: output.s7,
     mempool: true,
     txid: tx.tx.h,
-    prev: tx.in[0].e
+    prev: tx.in[0].e,
+    i: tx.i,
+    tSender: output.s8
   }
 
   if (output.s3 === get(pubKeyString)) {

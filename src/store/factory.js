@@ -12,9 +12,9 @@ export function writable(getter, setter, init = undefined) {
 
   return {
     subscribe,
-    set: (value) => {
+    set: async (value) => {
       set(value)
-      setter(value)
+      await setter(value)
     },
     update,
     get loaded() {

@@ -33,10 +33,6 @@
   import * as bsvMessage from "bsv/message";
 
   export let recipient;
-  // let messages = {};
-  // $: sorted = Object.values(messages).sort((a, b) => a.timestamp - b.timestamp);
-
-  // let localMessages = [];
 
   $: localMessages = $sorted.filter(
     message =>
@@ -46,12 +42,6 @@
 
   $: recipientECIES = bsvEcies().publicKey(bsv.PublicKey.fromString(recipient));
 
-  // const localMessages = derived(sorted, $sort =>
-  //   $sort.filter(
-  //     message => message.recpient == recipient || message.sender == recipient
-  //   )
-  // );
-
   let input;
   let batchSize = 30;
   let threshold = 300;
@@ -59,38 +49,6 @@
   let loadingAt;
   let lastFetched;
   let loading = false;
-
-  $: query = {
-    q: {
-      find: {
-        "out.s2": protocols.message,
-        $or: [
-          { "out.s3": $pubKeyString, "out.s4": recipient },
-          {
-            "out.s3": recipient,
-            "out.s4": $pubKeyString
-          }
-        ]
-      },
-      // sort: { timestamp: -1 },
-      project: {
-        blk: 1,
-        "tx.h": 1,
-        "out.s3": 1,
-        "out.s4": 1,
-        "out.s5": 1,
-        "out.s6": 1,
-        "out.s7": 1,
-        "out.o1": 1,
-        "in.e": 1,
-        timestamp: 1,
-        "blk.i": 1
-      },
-      limit: 200
-    }
-  };
-
-  $: queryString = JSON.stringify(query);
 
   async function loadMore() {
     // await messages.loaded;
@@ -129,13 +87,16 @@
     const encryptedText = recipientECIES.encrypt(text).toString("hex");
     const messageToSelf = $encryptECIES.encrypt(text).toString("hex");
 
+    const timestamp = Date.now();
+
     const data = [
       protocols.message,
       $publicKey.toString(),
       recipient,
       encryptedText,
       messageToSelf,
-      signature
+      signature,
+      timestamp.toString()
     ];
 
     const tx = await build({
@@ -150,7 +111,7 @@
       signature,
       broadcast: false,
       mempool: false,
-      timestamp: Date.now()
+      timestamp
     };
 
     messages.put(message);
@@ -160,17 +121,6 @@
       broadcast: true
     });
   }
-
-  onMount(async () => {
-    await address.loaded;
-    const res = await fetchBitsocket(queryString);
-    readStream(res, tx => messages.put(getMessage(tx)));
-    const bitbusRes = await fetchBitbus(queryString);
-    readStream(bitbusRes, tx => messages.put(getMessage(tx)));
-    // await sorted.loaded;
-    // console.log($sorted);
-    // console.log($messages);
-  });
 </script>
 
 <Navbar back="/">
@@ -178,7 +128,7 @@
   <div class="flex-grow" />
 </Navbar>
 <ReverseScroller on:loadMore={loadMore}>
-  {#each localMessages as { sender, recipient, text, mempool, broadcast, timestamp, blk }, i}
+  {#each localMessages as { sender, recipient, text, mempool, broadcast, timestamp, blk }, index}
     <div
       class="flex {sender == $pubKeyString ? 'flex-row-reverse' : 'flex-row'}"
       style="margin: 0.5rem;">

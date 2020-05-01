@@ -2,12 +2,12 @@
   import jazzicon from "jazzicon";
   import { onMount } from "svelte";
 
-  export let address;
+  export let pubKey;
   let element;
   let px =
     2.5 * parseFloat(getComputedStyle(document.documentElement).fontSize);
 
-  $: image = jazzicon(px, parseInt(address));
+  $: image = jazzicon(px, parseInt(pubKey));
 
   onMount(() => {
     // console.log(address);

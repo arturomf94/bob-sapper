@@ -16,7 +16,10 @@
   import {
       isPushNotificationSupported,
       askUserPermission,
-      registerServiceWorker
+      registerServiceWorker,
+      createNotificationSubscription,
+      getUserSubscription,
+      sendNotification
   } from "../push-notifications"
   import {
     faSearch,
@@ -46,7 +49,9 @@
   onMount(async () => {
     const pushNotificationSupported = isPushNotificationSupported();
     registerServiceWorker();
+    getUserSubscription();
     askUserPermission();
+    createNotificationSubscription();
     await address.loaded;
     if (!$address) await goto("/loadseed");
 

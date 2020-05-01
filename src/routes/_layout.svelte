@@ -1,6 +1,6 @@
 <script>
   // import Navbar from "../components/Navbar.svelte";
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
   import { address, pubKeyString } from "../store/wallet";
   import { messages } from "../store/messages";
   import { getMessage, fetchBitbus } from "../planaria";
@@ -38,6 +38,8 @@
       }
     ]
   };
+
+  let socket;
 
   async function fetchHistory() {
     await address.loaded;
@@ -227,9 +229,8 @@
       }
     });
 
-    const socket = new EventSource(
-      "https://txo.bitsocket.network/s/" + btoa(query)
-    );
+    socket = new EventSource("https://txo.bitsocket.network/s/" + btoa(query));
+
     socket.onmessage = async event => {
       const data = JSON.parse(event.data);
       await messages.loaded;
@@ -266,6 +267,10 @@
     fetchHistory();
     fetchRecent();
     createSocket();
+  });
+
+  onDestroy(() => {
+    if (socket) socket.close();
   });
 </script>
 

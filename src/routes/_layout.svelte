@@ -3,7 +3,7 @@
   import { onMount, onDestroy } from "svelte";
   import { address, pubKeyString } from "../store/wallet";
   import { messages } from "../store/messages";
-  import { getMessage, fetchBitbus } from "../planaria";
+  import { getMessage, fetchBitbus, fetchBitsocket } from "../planaria";
   import db from "../store/db";
   import { gt } from "../utils/versions";
   import protocols from "../protocols";
@@ -59,8 +59,7 @@
               ...txFilter
             },
             sort,
-            project,
-            limit: 10
+            project
           }
         });
 
@@ -89,8 +88,7 @@
               ]
             },
             sort,
-            project,
-            limit: 10
+            project
           }
         });
 
@@ -147,8 +145,7 @@
             ]
           },
           sort,
-          project,
-          limit: 5
+          project
         }
       };
 
@@ -224,8 +221,7 @@
           ...txFilter
         },
         sort,
-        project,
-        limit: 10
+        project
       }
     });
 
@@ -251,6 +247,21 @@
     console.log("Socket listening");
   }
 
+  async function fetchMempool() {
+    const query = JSON.stringify({
+      q: {
+        find: {
+          "out.s2": protocols.message,
+          ...txFilter
+        },
+        sort,
+        project
+      }
+    });
+    const res = await fetchBitsocket(query);
+    await readStream(res, tx => messages.put(getMessage(tx)));
+  }
+
   onMount(async () => {
     const prevVersion = await db.versions.get("protocol");
     if (!prevVersion || gt(versions.protocol, prevVersion.version)) {
@@ -264,6 +275,7 @@
     // $firstTx = { blk: 632739, i: 3763 };
     // $lastTx = { blk: 632739, i: 3763 };
 
+    fetchMempool();
     fetchHistory();
     fetchRecent();
     createSocket();

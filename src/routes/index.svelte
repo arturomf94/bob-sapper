@@ -47,13 +47,16 @@
   async function loadMore() {}
 
   onMount(async () => {
-    const pushNotificationSupported = isPushNotificationSupported();
-    registerServiceWorker();
-    getUserSubscription();
-    askUserPermission();
-    createNotificationSubscription();
     await address.loaded;
-    if (!$address) await goto("/loadseed");
+    if (!$address) {
+      await goto("/loadseed");
+    } else {
+      const pushNotificationSupported = isPushNotificationSupported();
+      registerServiceWorker();
+      getUserSubscription();
+      askUserPermission();
+      createNotificationSubscription();
+    }
 
     const imageModule = await import("../components/Image.svelte");
     Image = imageModule.default;

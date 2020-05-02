@@ -15,7 +15,7 @@ export async function readStream(stream, callBack) {
       try {
         callBack(tx)
       } catch (e) {
-        console.log("Failed to unpack message:", e)
+        console.log("Failed to unpack message:", tx, e)
       }
     }
     await readNext()

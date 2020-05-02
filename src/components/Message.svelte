@@ -2,6 +2,8 @@
   import Icon from "fa-svelte";
   import { faCheckDouble, faCheck } from "@fortawesome/free-solid-svg-icons";
   import { timeSince } from "../utils/time";
+  import DOMPurify from "dompurify";
+  import marked from "../utils/marked";
 
   export let text;
   export let sendByMe;
@@ -53,8 +55,9 @@
   <div
     class="absolute bottom-0 {sendByMe ? 'pointer-right' : 'pointer-left'}" />
   <span
-    class={sendByMe ? (datetime ? 'mr-10' : 'mr-2') : datetime ? 'mr-6' : ''}>
-    {text}
+    class="{sendByMe ? (datetime ? 'mr-10' : 'mr-2') : datetime ? 'mr-6' : ''}
+    markdown">
+    {@html marked(DOMPurify.sanitize(text))}
   </span>
   <div class="absolute right-0 bottom-0 mr-2 mb-1 smoltext">
     {#if datetime}

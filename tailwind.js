@@ -1,5 +1,10 @@
 module.exports = {
   theme: {
+    fontFamily: {
+      sans: "Roboto, sans-serif",
+      serif: "Roboto Slab, serif",
+      mono: "Roboto Mono, monospace"
+    },
     extend: {},
     colors: {
       transparent: "transparent",

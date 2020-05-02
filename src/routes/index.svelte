@@ -52,10 +52,13 @@
       await goto("/loadseed");
     } else {
       const pushNotificationSupported = isPushNotificationSupported();
-      registerServiceWorker();
-      getUserSubscription();
-      askUserPermission();
-      createNotificationSubscription();
+      if (pushNotificationSupported) {
+          askUserPermission();
+          registerServiceWorker();
+          getUserSubscription();
+          askUserPermission();
+          createNotificationSubscription();
+      }
     }
 
     const imageModule = await import("../components/Image.svelte");

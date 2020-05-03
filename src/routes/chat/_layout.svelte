@@ -7,6 +7,14 @@
   import { gt } from "../../utils/versions";
   import protocols from "../../protocols";
   import { goto } from "@sapper/app";
+  import {
+    isPushNotificationSupported,
+    askUserPermission,
+    registerServiceWorker,
+    createNotificationSubscription,
+    getUserSubscription,
+    sendNotification
+  } from "../../push-notifications";
 
   const versions = {
     protocol: "0.0.3"
@@ -16,7 +24,6 @@
 
   async function createSocket() {
     await pubKeyString.loaded;
-
     const query = JSON.stringify({
       q: {
         find: {
@@ -38,7 +45,6 @@
     socket.onmessage = async event => {
       const data = JSON.parse(event.data);
       await messages.loaded;
-
       for (const tx of data.data) {
         console.log(tx);
         let message;
@@ -50,6 +56,7 @@
         }
         console.log(message);
         messages.put(message);
+        sendNotification(message.text, message.id);
       }
     };
     console.log("Socket listening");
@@ -59,25 +66,31 @@
     console.log("start");
     await address.loaded;
     if (!$address) await goto("/");
-
     const prevVersion = await db.versions.get("protocol");
     if (!prevVersion || gt(versions.protocol, prevVersion.version)) {
       console.log("New version found, resetting storage");
       db.messages.clear();
     }
     db.versions.put({ module: "protocol", version: versions.protocol });
-
+    const pushNotificationSupported = isPushNotificationSupported();
+    if (pushNotificationSupported) {
+      askUserPermission();
+      registerServiceWorker();
+      getUserSubscription();
+      askUserPermission();
+      createNotificationSubscription();
+    }
     const bitbusWorker = await import("../../workers/bitbus.worker");
     const mempoolWorker = await import("../../workers/mempool.worker");
     const bitbus = new bitbusWorker.default();
     const mempool = new mempoolWorker.default();
-
     createSocket();
   });
 
   onDestroy(() => {
     if (socket) socket.close();
   });
+
 </script>
 
 <div class="w-full flex flex-col h-screen bg-grey-900">

@@ -14,14 +14,6 @@
 
   import protocols from "../protocols";
   import {
-      isPushNotificationSupported,
-      askUserPermission,
-      registerServiceWorker,
-      createNotificationSubscription,
-      getUserSubscription,
-      sendNotification
-  } from "../push-notifications"
-  import {
     faSearch,
     faArrowRight,
     faQrcode
@@ -48,18 +40,7 @@
 
   onMount(async () => {
     await address.loaded;
-    if (!$address) {
-      await goto("/loadseed");
-    } else {
-      const pushNotificationSupported = isPushNotificationSupported();
-      if (pushNotificationSupported) {
-          askUserPermission();
-          registerServiceWorker();
-          getUserSubscription();
-          askUserPermission();
-          createNotificationSubscription();
-      }
-    }
+    if (!$address) await goto("/loadseed");
 
     const imageModule = await import("../components/Image.svelte");
     Image = imageModule.default;

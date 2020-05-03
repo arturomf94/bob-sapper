@@ -9,7 +9,15 @@
   import protocols from "../protocols";
   import { firstTx, lastTx } from "../store/state";
   import { readStream } from "../utils/stream";
-  import { sendNotification } from "../push-notifications";
+
+  import {
+    isPushNotificationSupported,
+    askUserPermission,
+    registerServiceWorker,
+    createNotificationSubscription,
+    getUserSubscription,
+    sendNotification
+  } from "../push-notifications";
 
   const versions = {
     protocol: "0.0.3"
@@ -276,6 +284,15 @@
     // await $firstTx.loaded;
     // $firstTx = { blk: 632739, i: 3763 };
     // $lastTx = { blk: 632739, i: 3763 };
+
+    const pushNotificationSupported = isPushNotificationSupported();
+    if (pushNotificationSupported) {
+      askUserPermission();
+      registerServiceWorker();
+      getUserSubscription();
+      askUserPermission();
+      createNotificationSubscription();
+    }
 
     fetchMempool();
     fetchHistory();

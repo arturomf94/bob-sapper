@@ -19,7 +19,9 @@ export function writable(getter, setter, init = undefined) {
     update,
     get loaded() {
       return loaded
-    }
+    },
+    load,
+    reset: () => set(init)
   }
 }
 

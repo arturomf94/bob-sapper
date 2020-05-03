@@ -1,10 +1,10 @@
 <script>
-  import { address } from "../store/wallet";
-  import Navbar from "../components/Navbar.svelte";
-  import Qr from "../components/Qr.svelte";
-  import { fetchUTXOs } from "../mattercloud";
+  import { address } from "../../store/wallet";
+  import Navbar from "../../components/Navbar.svelte";
+  import Qr from "../../components/Qr.svelte";
+  import { fetchUTXOs } from "../../mattercloud";
   import { onMount } from "svelte";
-  import { utxos, sats } from "../store/utxos";
+  import { utxos, sats } from "../../store/utxos";
 
   let loaded = false;
 
@@ -15,7 +15,7 @@
   });
 </script>
 
-<Navbar back="/">
+<Navbar back="/chat">
   Wallet Funding
   <div class="flex-grow" />
 </Navbar>

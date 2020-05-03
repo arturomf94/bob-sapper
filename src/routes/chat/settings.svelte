@@ -1,21 +1,25 @@
 <script>
-  import Navbar from "../components/Navbar.svelte";
+  import Navbar from "../../components/Navbar.svelte";
   import { goto } from "@sapper/app";
-  import { messages } from "../store/messages";
-  import db from "../store/db";
+  import { messages } from "../../store/messages";
+  import { firstTx, lastTx } from "../../store/state";
+  import db from "../../store/db";
 
   let loading = false;
 
   async function clear() {
     loading = true;
     await db.messages.clear();
-    $messages = [];
+    await db.state.clear();
+    messages.reset();
+    firstTx.reset();
+    lastTx.reset();
     loading = false;
-    await goto("/");
+    await goto("/chat");
   }
 </script>
 
-<Navbar back="/">
+<Navbar back="/chat">
   Settings
   <div class="flex-grow" />
 </Navbar>

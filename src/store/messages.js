@@ -39,11 +39,10 @@ async function setMessages(messages) {
 }
 
 function createMessageStore() {
-  const { subscribe, loaded, update } = writable(getMessages, setMessages, {})
+  const { update, ...storeObj } = writable(getMessages, setMessages, {})
 
   return {
-    subscribe,
-    loaded,
+    ...storeObj,
     put: (msg) => {
       let updated
       update((msgs) => {

@@ -36,9 +36,15 @@
       class="absolute right-0 mx-2 mt-10 py-1 w-40 bg-grey-700 text-white
       rounded shadow-xl">
       {#each menu as item}
-        <a href={item.url} class="block px-3 py-1 text-gray-800">
-          {item.title}
-        </a>
+        {#if item.url}
+          <a href={item.url} class="block px-3 py-1 text-gray-800">
+            {item.title}
+          </a>
+        {:else}
+          <button on:click={item.func} class="block px-3 py-1 text-gray-800">
+            {item.title}
+          </button>
+        {/if}
       {/each}
     </div>
   </div>

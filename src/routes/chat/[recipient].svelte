@@ -123,7 +123,7 @@
   }
 </script>
 
-<Navbar back="/">
+<Navbar back="/chat">
   {recipient}
   <div class="flex-grow" />
 </Navbar>

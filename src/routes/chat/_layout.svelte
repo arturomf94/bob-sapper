@@ -18,7 +18,7 @@
     createNotificationSubscription,
     getUserSubscription,
     sendNotification
-  } from "../push-notifications";
+  } from "../../push-notifications";
 
   const versions = {
     protocol: "0.0.3"

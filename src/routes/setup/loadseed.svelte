@@ -1,6 +1,6 @@
 <script>
-  import { seed } from "../store/wallet";
-  import Navbar from "../components/Navbar.svelte";
+  import { seed } from "../../store/wallet";
+  import Navbar from "../../components/Navbar.svelte";
   import { goto } from "@sapper/app";
 
   let input;

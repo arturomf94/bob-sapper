@@ -1,14 +1,15 @@
 <script>
   // import Navbar from "../components/Navbar.svelte";
   import { onMount, onDestroy } from "svelte";
-  import { address, pubKeyString } from "../store/wallet";
-  import { messages } from "../store/messages";
-  import { getMessage, fetchBitbus, fetchBitsocket } from "../planaria";
-  import db from "../store/db";
-  import { gt } from "../utils/versions";
-  import protocols from "../protocols";
-  import { firstTx, lastTx } from "../store/state";
-  import { readStream } from "../utils/stream";
+  import { address, pubKeyString } from "../../store/wallet";
+  import { messages } from "../../store/messages";
+  import { getMessage, fetchBitbus, fetchBitsocket } from "../../planaria";
+  import db from "../../store/db";
+  import { gt } from "../../utils/versions";
+  import protocols from "../../protocols";
+  import { firstTx, lastTx } from "../../store/state";
+  import { readStream } from "../../utils/stream";
+  import { goto } from "@sapper/app";
 
   const versions = {
     protocol: "0.0.3"
@@ -263,6 +264,10 @@
   }
 
   onMount(async () => {
+    console.log("start");
+    await address.loaded;
+    if (!$address) await goto("/");
+
     const prevVersion = await db.versions.get("protocol");
     if (!prevVersion || gt(versions.protocol, prevVersion.version)) {
       console.log("New version found, resetting storage");

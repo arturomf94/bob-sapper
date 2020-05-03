@@ -124,7 +124,7 @@
 </script>
 
 <Navbar back="/chat">
-  {recipient}
+  <div class="overflow-hidden">{recipient}</div>
   <div class="flex-grow" />
 </Navbar>
 <ReverseScroller on:loadMore={loadMore}>

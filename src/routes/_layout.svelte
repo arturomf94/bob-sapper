@@ -9,6 +9,7 @@
   import protocols from "../protocols";
   import { firstTx, lastTx } from "../store/state";
   import { readStream } from "../utils/stream";
+  import { sendNotification } from "../push-notifications";
 
   const versions = {
     protocol: "0.0.3"
@@ -242,6 +243,7 @@
         }
         console.log(message);
         messages.put(message);
+        sendNotification(message.text);
       }
     };
     console.log("Socket listening");

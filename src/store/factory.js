@@ -8,7 +8,10 @@ export function writable(getter, setter, init = undefined) {
     return true
   }
 
-  let loaded = typeof window !== "undefined" ? load() : false // SSR server will try to run this
+  let loaded =
+    typeof window !== "undefined" || typeof self !== "undefined"
+      ? load()
+      : false // SSR server will try to run this
 
   return {
     subscribe,

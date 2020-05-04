@@ -33,7 +33,7 @@ export async function fetchBitbus(query) {
   return res.body
 }
 
-export function getMessage(tx) {
+export function getMessage(tx, pubKey, ecies) {
   const output = tx.out[0]
 
   const message = {
@@ -47,16 +47,19 @@ export function getMessage(tx) {
     tSender: output.s8
   }
 
-  if (output.s3 === get(pubKeyString)) {
-    message.text = get(decryptECIES)
-      .decrypt(bsv.deps.Buffer.from(output.s6, "hex"))
-      .toString()
-  } else if (output.s4 === get(pubKeyString)) {
-    message.text = get(decryptECIES)
-      .decrypt(bsv.deps.Buffer.from(output.s5, "hex"))
-      .toString()
+  let encryptedText
+  if (output.s3 === pubKey) {
+    encryptedText = bsv.deps.Buffer.from(output.s6, "hex")
+  } else if (output.s4 === pubKey) {
+    encryptedText = bsv.deps.Buffer.from(output.s5, "hex")
   } else {
     throw new Error("Can't decrypt message")
+  }
+
+  try {
+    message.text = ecies.decrypt(encryptedText).toString()
+  } catch (e) {
+    throw new Error("Failed to decrypt message", e)
   }
 
   if (tx.blk) message.blk = tx.blk.i
@@ -68,4 +71,33 @@ export function getMessage(tx) {
 
   verifyMessage(message)
   return message
+}
+
+export const project = {
+  blk: 1,
+  "tx.h": 1,
+  "out.s3": 1,
+  "out.s4": 1,
+  "out.s5": 1,
+  "out.s6": 1,
+  "out.s7": 1,
+  "out.s8": 1,
+  "out.o1": 1,
+  "in.e": 1,
+  timestamp: 1,
+  i: 1
+}
+
+export const sort = { "blk.i": -1, i: -1 }
+
+export async function getTxFilter() {
+  const pubKey = get(pubKeyString)
+  return {
+    $or: [
+      { "out.s3": pubKey },
+      {
+        "out.s4": pubKey
+      }
+    ]
+  }
 }

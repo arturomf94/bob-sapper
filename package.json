@@ -38,12 +38,13 @@
     "push-dir": "^0.4.1",
     "qrcode": "^1.4.4",
     "sapper": "^0.27.0",
-    "svelte": "^3.0.0",
+    "svelte": "^3.22.1",
     "svelte-infinite-scroll": "^1.2.0",
     "svelte-loader": "^2.9.0",
     "svelte-preprocess": "^3.7.1",
     "tailwindcss": "^1.2.0",
     "tailwindcss-spinner": "^1.0.0",
-    "webpack": "^4.7.0"
+    "webpack": "^4.7.0",
+    "worker-loader": "^2.0.0"
   }
 }

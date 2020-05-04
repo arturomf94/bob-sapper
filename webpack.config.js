@@ -40,6 +40,10 @@ module.exports = {
               preprocess: require("svelte-preprocess")(preprocessOptions)
             }
           }
+        },
+        {
+          test: /\.worker\.js$/,
+          use: { loader: "worker-loader" }
         }
       ]
     },

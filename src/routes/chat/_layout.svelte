@@ -1,6 +1,6 @@
 <script>
   import { onMount, onDestroy } from "svelte";
-  import { address, pubKeyString } from "../../store/wallet";
+  import { address, pubKeyString, decryptECIES } from "../../store/wallet";
   import { messages } from "../../store/messages";
   import { getMessage, sort, project } from "../../planaria";
   import db from "../../store/db";
@@ -43,7 +43,7 @@
         console.log(tx);
         let message;
         try {
-          message = await getMessage(tx);
+          message = await getMessage(tx, $pubKeyString, $decryptECIES);
         } catch (e) {
           console.log("Failed to unpack message:", e);
           return;

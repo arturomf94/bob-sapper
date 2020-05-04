@@ -7,7 +7,6 @@
   import { gt } from "../../utils/versions";
   import protocols from "../../protocols";
   import { goto } from "@sapper/app";
-<<<<<<< HEAD
   import {
     isPushNotificationSupported,
     askUserPermission,
@@ -16,9 +15,6 @@
     getUserSubscription,
     sendNotification
   } from "../../push-notifications";
-=======
-  import { sendNotification } from "../push-notifications";
->>>>>>> Send notification on a new message
 
   const versions = {
     protocol: "0.0.3"
@@ -60,11 +56,7 @@
         }
         console.log(message);
         messages.put(message);
-<<<<<<< HEAD
         sendNotification(message.text, message.id);
-=======
-        sendNotification(message.text);
->>>>>>> Send notification on a new message
       }
     };
     console.log("Socket listening");

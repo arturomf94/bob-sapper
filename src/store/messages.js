@@ -90,6 +90,7 @@ export const chats = derived(
   [sorted, pubKeyString],
   async ([$sorted, $pubKeyString], set) => {
     await pubKeyString.loaded
+    await sorted.loaded
 
     set(
       $sorted

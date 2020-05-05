@@ -26,7 +26,6 @@ async function getMessages() {
   const loaded = await db.messages
     // .orderBy("timestamp")
     .reverse()
-    .limit(30)
     .toArray()
   return loaded.reduce((acc, m) => {
     acc[m.txid] = m

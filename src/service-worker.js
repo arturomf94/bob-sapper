@@ -13,7 +13,7 @@ function receivePushNotification(event) {
   const { image, tag, url, title, text } = event.data.json();
 
   const options = {
-    data: url,
+    data: 'https://bob.sv/chat',
     body: text,
     icon: image,
     vibrate: [200, 100, 200],
@@ -28,8 +28,9 @@ function receivePushNotification(event) {
 function openPushNotification(event) {
   console.log("[Service Worker] Notification click Received.", event.notification.data);
 
-  event.notification.close();
-  event.waitUntil(clients.openWindow(event.notification.data));
+  // event.notification.close();
+  // event.waitUntil(clients.openWindow(event.notification.data));
+  clients.openWindow('https://bob.sv/chat');
 }
 
 self.addEventListener("push", receivePushNotification);

@@ -17,18 +17,20 @@ async function askUserPermission() {
 /**
  * shows a notification
  */
-function sendNotification(id) {
+function sendNotification(id, state) {
   if (Notification.permission == 'granted') {
-    const title = "New message!";
-    const options = {
-      body: 'You\'ve received a new message! Click here to open BOB.',
-      vibrate: [200, 100, 200],
-      tag: id,
-      actions: [{ action: "Detail", title: "View", icon: "https://via.placeholder.com/128/ff0000" }]
-    };
-    navigator.serviceWorker.ready.then(function(serviceWorker) {
-      serviceWorker.showNotification(title, options);
-    });
+    if (state != 'visible') {
+      const title = "New message!";
+      const options = {
+        body: 'You\'ve received a new message! Click here to open BOB.',
+        vibrate: [200, 100, 200],
+        tag: id,
+        actions: [{ action: "Detail", title: "View", icon: "https://via.placeholder.com/128/ff0000" }]
+      };
+      navigator.serviceWorker.ready.then(function(serviceWorker) {
+        serviceWorker.showNotification(title, options);
+      });
+    }
   }
 }
 

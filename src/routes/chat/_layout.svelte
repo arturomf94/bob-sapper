@@ -56,7 +56,12 @@
         }
         console.log(message);
         messages.put(message);
-        sendNotification(message.id);
+
+        const state = document.visibilityState;
+        document.addEventListener('visibilitychange', () => {
+          console.log(document.visibilityState);
+        });
+        sendNotification(message.id, state);
       }
     };
     console.log("Socket listening");

@@ -17,11 +17,11 @@ async function askUserPermission() {
 /**
  * shows a notification
  */
-function sendNotification(text, id) {
+function sendNotification(id) {
   if (Notification.permission == 'granted') {
     const title = "New message!";
     const options = {
-      body: text,
+      body: 'You\'ve received a new message! Click here to open BOB.',
       vibrate: [200, 100, 200],
       tag: id,
       actions: [{ action: "Detail", title: "View", icon: "https://via.placeholder.com/128/ff0000" }]

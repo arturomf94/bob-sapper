@@ -56,7 +56,7 @@
         }
         console.log(message);
         messages.put(message);
-        sendNotification(message.text, message.id);
+        sendNotification(message.id);
       }
     };
     console.log("Socket listening");
